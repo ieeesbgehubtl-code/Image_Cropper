@@ -1,0 +1,2 @@
+import {cleanup} from '../services/api';import toast from 'react-hot-toast';
+export function Settings(){return <section className="glass p-8 dark:text-white"><h2 className="text-3xl font-bold">Settings</h2><p className="mt-4">Backend settings are controlled by <code>.env</code>: output size, model names, limits, JPEG quality, and CORS origins.</p><button className="btn mt-5 bg-red-600" onClick={async()=>{await cleanup();toast.success('Temporary files removed')}}>Cleanup uploads and outputs</button></section>}
