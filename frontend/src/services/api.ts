@@ -34,6 +34,13 @@ export async function processZip(file: File, background: string) {
 }
 export const downloadUrl = (path?: string) =>
   path ? `${api.defaults.baseURL}${path}` : "#";
+export const downloadUrlWithFilename = (path?: string, filename?: string) => {
+  if (!path) return "#";
+  const url = downloadUrl(path);
+  if (!filename?.trim()) return url;
+  const separator = url.includes("?") ? "&" : "?";
+  return `${url}${separator}filename=${encodeURIComponent(filename.trim())}`;
+};
 export async function cleanup() {
   const { data } = await api.delete("/api/cleanup");
   return data;
