@@ -1,2 +1,67 @@
-import {useMemo,useState} from 'react';import toast from 'react-hot-toast';import {Loader2,Play,Trash2} from 'lucide-react';import {UploadCard} from '../components/UploadCard';import {ResultGallery} from '../components/ResultGallery';import {useProcessing} from '../hooks/useProcessing';
-export function Home(){const[files,setFiles]=useState<File[]>([]);const[bg,setBg]=useState('#FFFFFF');const mutation=useProcessing(bg);const started=useMemo(()=>Date.now(),[mutation.isPending]);async function run(){if(!files.length)return toast.error('Add at least one file');try{await mutation.mutateAsync(files);toast.success('Processing complete')}catch(e){toast.error('Processing failed')}}return <><section className="glass p-8"><h2 className="text-4xl font-black text-slate-900 dark:text-white">Professional passport photos in one click</h2><p className="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">InsightFace detects the largest face only, RMBG-2.0 removes the background, and the app crops, composites, resizes, and exports local JPEG results.</p><div className="mt-5 flex flex-wrap items-center gap-3"><label className="dark:text-white">Background <input className="input" type="color" value={bg} onChange={e=>setBg(e.target.value)}/></label><button className="btn" disabled={mutation.isPending} onClick={run}>{mutation.isPending?<Loader2 className="animate-spin"/>:<Play/>} Generate</button><button className="btn bg-slate-700" onClick={()=>setFiles([])}><Trash2/>Clear</button></div>{mutation.isPending&&<p className="mt-4 text-blue-700 dark:text-blue-300">Processing {files.length} file(s). Elapsed {Math.round((Date.now()-started)/1000)}s. Cancellation is available by refreshing before request completion.</p>}</section><UploadCard files={files} setFiles={setFiles}/><ResultGallery data={mutation.data}/></>}
+import { useMemo, useState } from "react";
+import toast from "react-hot-toast";
+import { Loader2, Play, Trash2 } from "lucide-react";
+import { UploadCard } from "../components/UploadCard";
+import { ResultGallery } from "../components/ResultGallery";
+import { useProcessing } from "../hooks/useProcessing";
+export function Home() {
+  const [files, setFiles] = useState<File[]>([]);
+  const [bg, setBg] = useState("#FFFFFF");
+  const mutation = useProcessing(bg);
+  const started = useMemo(() => Date.now(), [mutation.isPending]);
+  async function run() {
+    if (!files.length) return toast.error("Add at least one file");
+    try {
+      await mutation.mutateAsync(files);
+      toast.success("Processing complete");
+    } catch (e) {
+      toast.error("Processing failed");
+    }
+  }
+  return (
+    <>
+      <section className="glass p-8">
+        <h2 className="text-4xl font-black text-slate-900 dark:text-white">
+          Professional passport photos in one click
+        </h2>
+        <p className="mt-3 max-w-3xl text-slate-600 dark:text-slate-300">
+          InsightFace detects the largest face only, RMBG-2.0 removes the
+          background, and the app crops, composites, resizes, and exports local
+          JPEG results.
+        </p>
+        <div className="mt-5 flex flex-wrap items-center gap-3">
+          <label className="dark:text-white">
+            Background{" "}
+            <input
+              className="input"
+              type="color"
+              value={bg}
+              onChange={(e) => setBg(e.target.value)}
+            />
+          </label>
+          <button className="btn" disabled={mutation.isPending} onClick={run}>
+            {mutation.isPending ? (
+              <Loader2 className="animate-spin" />
+            ) : (
+              <Play />
+            )}{" "}
+            Generate
+          </button>
+          <button className="btn bg-slate-700" onClick={() => setFiles([])}>
+            <Trash2 />
+            Clear
+          </button>
+        </div>
+        {mutation.isPending && (
+          <p className="mt-4 text-blue-700 dark:text-blue-300">
+            Processing {files.length} file(s). Elapsed{" "}
+            {Math.round((Date.now() - started) / 1000)}s. Cancellation is
+            available by refreshing before request completion.
+          </p>
+        )}
+      </section>
+      <UploadCard files={files} setFiles={setFiles} />
+      <ResultGallery data={mutation.data} />
+    </>
+  );
+}

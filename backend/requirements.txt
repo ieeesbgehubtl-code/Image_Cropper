@@ -9,7 +9,8 @@ opencv-python>=4.10
 numpy>=1.26
 insightface>=0.7.3
 onnxruntime>=1.18
-onnxruntime-gpu>=1.18; platform_system != "Darwin"
+# onnxruntime-gpu is omitted on Windows unless CUDA is installed.
+rembg>=2.0
 torch>=2.3
 transformers>=4.42
 accelerate>=0.31

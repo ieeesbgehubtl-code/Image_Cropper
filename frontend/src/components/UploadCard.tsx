@@ -1,2 +1,49 @@
-import {useDropzone} from 'react-dropzone';import {UploadCloud,X} from 'lucide-react';
-export function UploadCard({files,setFiles}:{files:File[];setFiles:(f:File[])=>void}){const dz=useDropzone({onDrop:a=>setFiles([...files,...a]),multiple:true,accept:{'image/*':['.jpg','.jpeg','.png','.webp','.heic','.heif'],'application/zip':['.zip']}});return <section className="glass p-6"><div {...dz.getRootProps()} className="cursor-pointer rounded-3xl border-2 border-dashed border-blue-400 p-10 text-center"><input {...dz.getInputProps()}/><UploadCloud className="mx-auto h-14 w-14 text-blue-600"/><h2 className="mt-4 text-2xl font-bold dark:text-white">Drag & drop photos or ZIP</h2><p className="text-slate-600 dark:text-slate-300">Browse files or a folder, then generate compliant 413 × 531 JPEG passport photos.</p></div><div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">{files.map((f,i)=><div className="flex items-center justify-between rounded-2xl bg-white/70 p-3 dark:bg-slate-800" key={f.name+i}><span className="truncate text-sm dark:text-white">{f.name}</span><button onClick={()=>setFiles(files.filter((_,n)=>n!==i))}><X/></button></div>)}</div></section>}
+import { useDropzone } from "react-dropzone";
+import { UploadCloud, X } from "lucide-react";
+export function UploadCard({
+  files,
+  setFiles,
+}: {
+  files: File[];
+  setFiles: (f: File[]) => void;
+}) {
+  const dz = useDropzone({
+    onDrop: (a) => setFiles([...files, ...a]),
+    multiple: true,
+    accept: {
+      "image/*": [".jpg", ".jpeg", ".png", ".webp", ".heic", ".heif"],
+      "application/zip": [".zip"],
+    },
+  });
+  return (
+    <section className="glass p-6">
+      <div
+        {...dz.getRootProps()}
+        className="cursor-pointer rounded-3xl border-2 border-dashed border-blue-400 p-10 text-center"
+      >
+        <input {...dz.getInputProps()} />
+        <UploadCloud className="mx-auto h-14 w-14 text-blue-600" />
+        <h2 className="mt-4 text-2xl font-bold dark:text-white">
+          Drag & drop photos or ZIP
+        </h2>
+        <p className="text-slate-600 dark:text-slate-300">
+          Browse files or a folder, then generate compliant 413 × 531 JPEG
+          passport photos.
+        </p>
+      </div>
+      <div className="mt-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-3">
+        {files.map((f, i) => (
+          <div
+            className="flex items-center justify-between rounded-2xl bg-white/70 p-3 dark:bg-slate-800"
+            key={f.name + i}
+          >
+            <span className="truncate text-sm dark:text-white">{f.name}</span>
+            <button onClick={() => setFiles(files.filter((_, n) => n !== i))}>
+              <X />
+            </button>
+          </div>
+        ))}
+      </div>
+    </section>
+  );
+}

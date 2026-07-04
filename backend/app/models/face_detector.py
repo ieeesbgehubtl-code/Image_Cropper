@@ -21,10 +21,10 @@ class FaceDetector:
     def load(self) -> None:
         with self._lock:
             if self.app is not None: return
-            providers = ["CUDAExecutionProvider", "CPUExecutionProvider"]
+            providers = ["CPUExecutionProvider"]
             self.app = FaceAnalysis(name=self.settings.insightface_model, providers=providers, allowed_modules=["detection"])
             self.app.prepare(ctx_id=0, det_size=self.settings.insightface_det_size)
-            logger.info("InsightFace detection model loaded")
+            logger.info("InsightFace detection model loaded using CPUExecutionProvider")
     def detect(self, image: np.ndarray) -> list[FaceBox]:
         if self.app is None: self.load()
         rgb = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)

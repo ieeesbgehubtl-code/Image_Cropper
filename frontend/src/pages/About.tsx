@@ -1,1 +1,23 @@
-export function About(){return <section className="glass p-8 dark:text-white"><h2 className="text-3xl font-bold">About</h2><p className="mt-4">This local-only application generates passport-style photographs without face recognition, cloud storage, authentication, databases, or third-party APIs. Models are reused after startup for efficient offline inference.</p><ol className="mt-4 list-decimal pl-6"><li>Upload validation, HEIC conversion, and ZIP extraction.</li><li>Largest-face detection using InsightFace detection modules only.</li><li>AI alpha matting with RMBG-2.0 and BiRefNet fallback.</li><li>Adaptive crop, solid background alpha compositing, and JPEG export.</li></ol></section>}
+export function About() {
+  return (
+    <section className="glass p-8 dark:text-white">
+      <h2 className="text-3xl font-bold">About</h2>
+      <p className="mt-4">
+        This local-only application generates passport-style photographs without
+        face recognition, cloud storage, authentication, databases, or
+        third-party APIs. Models are reused after startup for efficient offline
+        inference.
+      </p>
+      <ol className="mt-4 list-decimal pl-6">
+        <li>Upload validation, HEIC conversion, and ZIP extraction.</li>
+        <li>
+          Largest-face detection using InsightFace detection modules only.
+        </li>
+        <li>AI alpha matting with RMBG-2.0 and BiRefNet fallback.</li>
+        <li>
+          Adaptive crop, solid background alpha compositing, and JPEG export.
+        </li>
+      </ol>
+    </section>
+  );
+}

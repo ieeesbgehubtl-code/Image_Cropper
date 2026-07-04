@@ -1,0 +1,19 @@
+{
+  "root": [
+    "./src/app.tsx",
+    "./src/main.tsx",
+    "./src/components/navbar.tsx",
+    "./src/components/resultgallery.tsx",
+    "./src/components/uploadcard.tsx",
+    "./src/contexts/themecontext.tsx",
+    "./src/hooks/useprocessing.ts",
+    "./src/layouts/applayout.tsx",
+    "./src/pages/about.tsx",
+    "./src/pages/history.tsx",
+    "./src/pages/home.tsx",
+    "./src/pages/settings.tsx",
+    "./src/services/api.ts",
+    "./src/types/api.ts"
+  ],
+  "version": "6.0.3"
+}
