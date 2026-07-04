@@ -1,7 +1,34 @@
-import { Download } from "lucide-react";
-import { downloadUrl } from "../services/api";
+import { useMemo, useState } from "react";
+import { Download, Pencil } from "lucide-react";
+import { downloadUrl, downloadUrlWithFilename } from "../services/api";
 import type { BatchResponse } from "../types/api";
+
+const invalidFilenameChars = /[<>:"/\\|?*\x00-\x1F]/g;
+
+function defaultDownloadName(original: string, output?: string) {
+  const fallback = output || original || "passport_photo.jpg";
+  const base = fallback.replace(/\.[^.]+$/, "");
+  return `${base || "passport_photo"}.jpg`;
+}
+
+function normalizeDownloadName(value: string) {
+  const cleaned = value.trim().replace(invalidFilenameChars, "_");
+  const withoutExtension = cleaned.replace(/\.[^.]+$/, "");
+  return `${withoutExtension || "passport_photo"}.jpg`;
+}
+
 export function ResultGallery({ data }: { data?: BatchResponse }) {
+  const [filenames, setFilenames] = useState<Record<string, string>>({});
+  const defaultNames = useMemo(() => {
+    if (!data) return {};
+    return Object.fromEntries(
+      data.results.map((r) => [
+        r.original_filename,
+        defaultDownloadName(r.original_filename, r.output_filename),
+      ]),
+    );
+  }, [data]);
+
   if (!data) return null;
   return (
     <section className="glass p-6 sm:p-8">
@@ -23,25 +50,55 @@ export function ResultGallery({ data }: { data?: BatchResponse }) {
         <Stat k="Failed" v={data.failed} />
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-        {data.results.map((r) => (
-          <article className="soft-card overflow-hidden p-4" key={r.original_filename}>
-            <h3 className="truncate font-bold text-slate-950 dark:text-white">{r.original_filename}</h3>
-            <p className={`mt-1 text-sm font-semibold ${r.success ? "text-emerald-600 dark:text-emerald-300" : "text-red-500"}`}>
-              {r.message}
-            </p>
-            {r.success && (
-              <>
-                <div className="my-4 rounded-2xl bg-slate-100 p-3 dark:bg-slate-950/60">
-                  <img className="mx-auto max-h-72 rounded-xl shadow-lg" src={downloadUrl(r.download_url)} alt={`Generated result for ${r.original_filename}`} />
-                </div>
-                <a className="btn w-full" href={downloadUrl(r.download_url)}>
-                  <Download className="h-5 w-5" />
-                  Download
-                </a>
-              </>
-            )}
-          </article>
-        ))}
+        {data.results.map((r) => {
+          const editedName = filenames[r.original_filename] ?? defaultNames[r.original_filename] ?? "passport_photo.jpg";
+          const downloadName = normalizeDownloadName(editedName);
+          return (
+            <article className="soft-card overflow-hidden p-4" key={r.original_filename}>
+              <h3 className="truncate font-bold text-slate-950 dark:text-white">{r.original_filename}</h3>
+              <p className={`mt-1 text-sm font-semibold ${r.success ? "text-emerald-600 dark:text-emerald-300" : "text-red-500"}`}>
+                {r.message}
+              </p>
+              {r.success && (
+                <>
+                  <div className="my-4 rounded-2xl bg-slate-100 p-3 dark:bg-slate-950/60">
+                    <img className="mx-auto max-h-72 rounded-xl shadow-lg" src={downloadUrl(r.download_url)} alt={`Generated result for ${r.original_filename}`} />
+                  </div>
+                  <label className="mb-3 block text-sm font-semibold text-slate-600 dark:text-slate-300">
+                    <span className="mb-1 flex items-center gap-2">
+                      <Pencil className="h-4 w-4" /> Download filename
+                    </span>
+                    <input
+                      className="input w-full"
+                      value={editedName}
+                      onChange={(event) =>
+                        setFilenames((current) => ({
+                          ...current,
+                          [r.original_filename]: event.target.value,
+                        }))
+                      }
+                      onBlur={() =>
+                        setFilenames((current) => ({
+                          ...current,
+                          [r.original_filename]: downloadName,
+                        }))
+                      }
+                      placeholder="passport_photo.jpg"
+                    />
+                  </label>
+                  <a
+                    className="btn w-full"
+                    href={downloadUrlWithFilename(r.download_url, downloadName)}
+                    download={downloadName}
+                  >
+                    <Download className="h-5 w-5" />
+                    Download as {downloadName}
+                  </a>
+                </>
+              )}
+            </article>
+          );
+        })}
       </div>
     </section>
   );

@@ -1,5 +1,5 @@
 from pathlib import Path
-from fastapi import APIRouter, Depends, File, Form, HTTPException, UploadFile
+from fastapi import APIRouter, Depends, File, Form, HTTPException, Query, UploadFile
 from fastapi.responses import FileResponse
 from app.config import Settings, get_settings
 from app.dependencies import get_passport_service
@@ -27,9 +27,11 @@ def download_all(settings: Settings = Depends(get_settings)):
     if not path.exists(): raise HTTPException(404, "No ZIP file available")
     return FileResponse(path, media_type="application/zip", filename=path.name)
 @router.get("/download/{filename}")
-def download(filename: str, settings: Settings = Depends(get_settings)):
+def download(filename: str, download_filename: str | None = Query(default=None, alias="filename"), settings: Settings = Depends(get_settings)):
     path = settings.output_dir / Path(filename).name
     if not path.exists(): raise HTTPException(404, "File not found")
-    return FileResponse(path, media_type="image/jpeg", filename=path.name)
+    suggested = Path(download_filename).name if download_filename else path.name
+    if not suggested.lower().endswith(".jpg"): suggested = f"{Path(suggested).stem or 'passport_photo'}.jpg"
+    return FileResponse(path, media_type="image/jpeg", filename=suggested)
 @router.delete("/cleanup")
 def cleanup(svc: PassportImageService = Depends(get_passport_service)): return {"removed": svc.cleanup()}
