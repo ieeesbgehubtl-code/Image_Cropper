@@ -1,6 +1,10 @@
 import { useMemo, useState } from "react";
 import { Download, Pencil } from "lucide-react";
-import { downloadUrl, downloadUrlWithFilename } from "../services/api";
+import {
+  downloadUrl,
+  downloadUrlWithFilename,
+  downloadZipUrlWithFilenames,
+} from "../services/api";
 import type { BatchResponse } from "../types/api";
 
 const invalidFilenameChars = /[<>:"/\\|?*\x00-\x1F]/g;
@@ -22,14 +26,26 @@ export function ResultGallery({ data }: { data?: BatchResponse }) {
   const defaultNames = useMemo(() => {
     if (!data) return {};
     return Object.fromEntries(
-      data.results.map((r) => [
-        r.original_filename,
-        defaultDownloadName(r.original_filename, r.output_filename),
-      ]),
+      data.results
+        .filter((r) => r.success && r.output_filename)
+        .map((r) => [
+          r.output_filename!,
+          defaultDownloadName(r.original_filename, r.output_filename),
+        ]),
     );
   }, [data]);
 
   if (!data) return null;
+
+  const zipFilenames = Object.fromEntries(
+    data.results
+      .filter((r) => r.success && r.output_filename)
+      .map((r) => {
+        const key = r.output_filename!;
+        return [key, normalizeDownloadName(filenames[key] ?? defaultNames[key])];
+      }),
+  );
+
   return (
     <section className="glass p-6 sm:p-8">
       <div className="flex flex-wrap items-center justify-between gap-3">
@@ -38,7 +54,7 @@ export function ResultGallery({ data }: { data?: BatchResponse }) {
           <h2 className="mt-1 text-2xl font-black text-slate-950 dark:text-white">Generated results</h2>
         </div>
         {data.zip_download_url && (
-          <a className="btn" href={downloadUrl(data.zip_download_url)}>
+          <a className="btn" href={downloadZipUrlWithFilenames(data.zip_download_url, zipFilenames)}>
             <Download className="h-5 w-5" />
             Download all ZIP
           </a>
@@ -51,7 +67,8 @@ export function ResultGallery({ data }: { data?: BatchResponse }) {
       </div>
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
         {data.results.map((r) => {
-          const editedName = filenames[r.original_filename] ?? defaultNames[r.original_filename] ?? "passport_photo.jpg";
+          const filenameKey = r.output_filename ?? r.original_filename;
+          const editedName = filenames[filenameKey] ?? defaultNames[filenameKey] ?? "passport_photo.jpg";
           const downloadName = normalizeDownloadName(editedName);
           return (
             <article className="soft-card overflow-hidden p-4" key={r.original_filename}>
@@ -74,13 +91,13 @@ export function ResultGallery({ data }: { data?: BatchResponse }) {
                       onChange={(event) =>
                         setFilenames((current) => ({
                           ...current,
-                          [r.original_filename]: event.target.value,
+                          [filenameKey]: event.target.value,
                         }))
                       }
                       onBlur={() =>
                         setFilenames((current) => ({
                           ...current,
-                          [r.original_filename]: downloadName,
+                          [filenameKey]: downloadName,
                         }))
                       }
                       placeholder="passport_photo.jpg"
