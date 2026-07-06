@@ -34,7 +34,7 @@ def download_all(filenames: str | None = Query(default=None), settings: Settings
             raise HTTPException(400, "Invalid filenames mapping") from exc
         path = settings.output_dir / "passport_photos_custom.zip"
         with zipfile.ZipFile(path, "w", zipfile.ZIP_DEFLATED) as zf:
-            for jpg in settings.output_dir.glob("*_passport.jpg"):
+            for jpg in settings.output_dir.glob("*.jpg"):
                 suggested = Path(str(requested_names.get(jpg.name, jpg.name))).name
                 if not suggested.lower().endswith(".jpg"): suggested = f"{Path(suggested).stem or 'passport_photo'}.jpg"
                 zf.write(jpg, suggested)

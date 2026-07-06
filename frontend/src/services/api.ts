@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { BatchResponse, PassportResult } from "../types/api";
 export const api = axios.create({
-  baseURL: import.meta.env.VITE_API_URL ?? "",
+  baseURL: import.meta.env.VITE_API_URL ?? "http://127.0.0.1:8001",
 });
 const form = (files: File[], background: string) => {
   const f = new FormData();

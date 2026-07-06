@@ -6,11 +6,12 @@ dist/
 .env
 package-lock.json
 !backend/.env.example
-backend/app/uploads/*
-backend/app/outputs/*
-backend/app/temp/*
-backend/app/logs/*
+backend/app/uploads/
+backend/app/outputs/
+backend/app/temp/
+backend/app/logs/
 !backend/app/uploads/.gitkeep
 !backend/app/outputs/.gitkeep
 !backend/app/temp/.gitkeep
 !backend/app/logs/.gitkeep
+.gitkeep

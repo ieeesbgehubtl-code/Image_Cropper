@@ -22,7 +22,7 @@ class PassportImageService:
             cropped = self._crop_for_passport(image, face)
             rgba = self.background_remover.remove(cropped)
             composed = self._compose(rgba, background).resize((self.settings.output_width, self.settings.output_height), Image.Resampling.LANCZOS)
-            output = self.settings.output_dir / f"{Path(name).stem}_passport.jpg"
+            output = self.settings.output_dir / f"{Path(name).stem}.jpg"
             composed.save(output, "JPEG", quality=self.settings.jpeg_quality, optimize=True)
             logger.info("Processed {} in {:.2f}s", name, time.perf_counter() - start)
             return PassportResult(original_filename=name, output_filename=output.name, download_url=f"/api/download/{output.name}", success=True, message="Processed successfully", face_count=face_count)
@@ -40,7 +40,7 @@ class PassportImageService:
     def create_zip(self) -> str:
         zip_path = self.settings.output_dir / "passport_photos.zip"
         with zipfile.ZipFile(zip_path, "w", zipfile.ZIP_DEFLATED) as zf:
-            for jpg in self.settings.output_dir.glob("*_passport.jpg"): zf.write(jpg, jpg.name)
+            for jpg in self.settings.output_dir.glob("*.jpg"): zf.write(jpg, jpg.name)
         return "/api/download/all"
     def cleanup(self) -> int:
         count = 0
